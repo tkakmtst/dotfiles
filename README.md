@@ -2,6 +2,25 @@
 
 個人用の dotfiles リポジトリ。
 
+## セットアップ
+
+他の端末でこの dotfiles を使用する場合は、以下のコマンドを実行してください。
+
+```sh
+git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./setup.sh
+```
+
+セットアップスクリプトは以下を自動的に行います：
+- 既存ファイルのバックアップ（タイムスタンプ付き）
+- `.tmux.conf` → `~/.tmux.conf` のシンボリックリンク作成
+- `nvim/` → `~/.config/nvim` のシンボリックリンク作成
+- `bin/work` → `~/bin/work` のシンボリックリンク作成
+- `bin/work` への実行権限付与
+
+セットアップ後、`~/bin` を PATH に追加する必要がある場合があります（スクリプトが案内します）。
+
 ## 構成
 
 ```
