@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# プロジェクト開発用のtmuxレイアウト
+# +---------------------------+----------+
+# |                           |          |
+# |         nvim              |          |
+# |         (70%)             |  claude  |
+# |                           |  (30%)   |
+# +---------------------------+          |
+# |       terminal            |          |
+# |         (30%)             |          |
+# +---------------------------+----------+
+#         左 70%                右 30%
+
+WORK_DIR="$PWD"
+SESSION="$(basename "$WORK_DIR")"
+
+# セッション名に使えない文字（ドットやコロン）を置換
+SESSION="${SESSION//./-}"
+SESSION="${SESSION//:/-}"
+
+# 既存のセッションがあればアタッチ
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+    tmux attach-session -t "$SESSION"
+    exit 0
+fi
+
+# 新しいセッションを作成
+tmux new-session -d -s "$SESSION" -c "$WORK_DIR"
+
+# 左右に分割: 右側30%にclaude
+tmux split-window -h -p 30 -t "$SESSION" -c "$WORK_DIR"
+
+# 左側ペインを上下に分割: 下側30%にterminal
+tmux split-window -v -p 30 -t "$SESSION:0.0" -c "$WORK_DIR"
+
+# ペイン0（左上）: nvim
+tmux send-keys -t "$SESSION:0.0" 'nvim' C-m
+
+# ペイン1（左下）: terminal（そのまま）
+
+# ペイン2（右）: claude
+tmux send-keys -t "$SESSION:0.2" 'claude' C-m
+
+# nvimペインにフォーカスを設定
+tmux select-pane -t "$SESSION:0.0"
+
+# セッションにアタッチ
+tmux attach-session -t "$SESSION"
