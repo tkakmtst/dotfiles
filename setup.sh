@@ -56,10 +56,16 @@ echo "[2/3] Neovim 設定のセットアップ"
 create_symlink "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 echo ""
 
-echo "[3/3] bin/work スクリプトのセットアップ"
+echo "[3/4] bin/work スクリプトのセットアップ"
 create_symlink "$DOTFILES_DIR/bin/work" "$HOME/bin/work"
 chmod +x "$DOTFILES_DIR/bin/work"
 echo "  実行権限を付与: bin/work"
+echo ""
+
+echo "[4/4] bin/wt スクリプトのセットアップ"
+create_symlink "$DOTFILES_DIR/bin/wt" "$HOME/bin/wt"
+chmod +x "$DOTFILES_DIR/bin/wt"
+echo "  実行権限を付与: bin/wt"
 echo ""
 
 echo "==================================="

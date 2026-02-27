@@ -17,7 +17,8 @@ cd ~/dotfiles
 - `.tmux.conf` → `~/.tmux.conf` のシンボリックリンク作成
 - `nvim/` → `~/.config/nvim` のシンボリックリンク作成
 - `bin/work` → `~/bin/work` のシンボリックリンク作成
-- `bin/work` への実行権限付与
+- `bin/wt` → `~/bin/wt` のシンボリックリンク作成
+- スクリプトへの実行権限付与
 
 セットアップ後、`~/bin` を PATH に追加する必要がある場合があります（スクリプトが案内します）。
 
@@ -27,7 +28,8 @@ cd ~/dotfiles
 .
 ├── .tmux.conf          # tmux 設定
 ├── bin/
-│   └── work            # 開発用 tmux ワークスペース起動スクリプト
+│   ├── work            # 開発用 tmux ワークスペース起動スクリプト
+│   └── wt              # git worktree 管理スクリプト
 ├── nvim/               # Neovim 設定 (~/.config/nvim)
 │   ├── init.lua
 │   ├── lazy-lock.json
@@ -95,4 +97,48 @@ tmux で開発ワークスペースを構築するスクリプト。
 ```sh
 chmod +x bin/work
 ./bin/work
+```
+
+## bin/wt
+
+git worktree を簡単に管理するためのスクリプト。
+
+### 使い方
+
+```sh
+# 既存ブランチのworktreeを作成
+wt add feat/new-feature
+
+# 新しいブランチを作成してworktreeに
+wt new fix/bug-123
+
+# worktree一覧を表示
+wt list
+
+# worktreeを削除
+wt remove feat/new-feature
+
+# 不要なworktree情報をクリーンアップ
+wt prune
+
+# ヘルプを表示
+wt help
+```
+
+### 特徴
+
+- worktreeは `~/worktrees/<repo-name>/<branch-name>` に自動作成される
+- ブランチ名のスラッシュは自動的にハイフンに置換される
+- 環境変数 `WORKTREE_BASE` でworktreeの作成先を変更可能
+
+### 例
+
+```sh
+# feat/user-auth ブランチのworktreeを作成
+$ wt add feat/user-auth
+# → ~/worktrees/myproject/feat-user-auth に作成される
+
+# 新しいfix/login-bugブランチを作成してworktreeに
+$ wt new fix/login-bug
+# → fix/login-bug ブランチが作成され、~/worktrees/myproject/fix-login-bug にworktreeが作成される
 ```

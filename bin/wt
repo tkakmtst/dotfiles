@@ -1,0 +1,205 @@
+#!/bin/bash
+
+# git worktree 管理スクリプト
+# 使い方:
+#   wt add <branch-name>        既存ブランチのworktreeを作成
+#   wt new <branch-name>        新しいブランチのworktreeを作成
+#   wt list                     worktree一覧を表示
+#   wt remove <branch-name>     worktreeを削除
+#   wt help                     ヘルプを表示
+
+set -e
+
+WORKTREE_BASE="${WORKTREE_BASE:-$HOME/worktrees}"
+
+show_help() {
+    cat << EOF
+git worktree 管理スクリプト
+
+使い方:
+  wt add <branch-name>        既存ブランチのworktreeを作成
+  wt new <branch-name>        新しいブランチのworktreeを作成
+  wt list                     worktree一覧を表示
+  wt remove <branch-name>     worktreeを削除
+  wt prune                    不要なworktree情報をクリーンアップ
+  wt help                     このヘルプを表示
+
+環境変数:
+  WORKTREE_BASE               worktreeを作成するベースディレクトリ
+                              (デフォルト: ~/worktrees)
+
+例:
+  wt add feat/new-feature     既存のfeat/new-featureブランチのworktreeを作成
+  wt new fix/bug-123          新しいfix/bug-123ブランチを作成してworktreeに
+  wt list                     現在のworktree一覧を表示
+  wt remove feat/new-feature  feat/new-featureのworktreeを削除
+
+注意:
+  - worktreeは \$WORKTREE_BASE/<repo-name>/<branch-name> に作成されます
+  - ブランチ名のスラッシュはハイフンに置換されます
+EOF
+}
+
+# gitリポジトリかチェック
+check_git_repo() {
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "エラー: gitリポジトリではありません" >&2
+        exit 1
+    fi
+}
+
+# リポジトリ名を取得
+get_repo_name() {
+    basename "$(git rev-parse --show-toplevel)"
+}
+
+# ブランチ名からパスを生成（スラッシュをハイフンに置換）
+branch_to_path() {
+    local branch="$1"
+    echo "${branch//\//-}"
+}
+
+# worktreeのパスを取得
+get_worktree_path() {
+    local branch="$1"
+    local repo_name="$(get_repo_name)"
+    local path_name="$(branch_to_path "$branch")"
+    echo "$WORKTREE_BASE/$repo_name/$path_name"
+}
+
+# 既存ブランチのworktreeを作成
+add_worktree() {
+    local branch="$1"
+
+    if [ -z "$branch" ]; then
+        echo "エラー: ブランチ名を指定してください" >&2
+        echo "使い方: wt add <branch-name>" >&2
+        exit 1
+    fi
+
+    check_git_repo
+
+    local worktree_path="$(get_worktree_path "$branch")"
+
+    if [ -d "$worktree_path" ]; then
+        echo "エラー: worktreeはすでに存在します: $worktree_path" >&2
+        exit 1
+    fi
+
+    echo "worktreeを作成: $branch -> $worktree_path"
+    mkdir -p "$(dirname "$worktree_path")"
+    git worktree add "$worktree_path" "$branch"
+
+    echo ""
+    echo "✓ worktreeを作成しました"
+    echo "  ディレクトリ: $worktree_path"
+    echo ""
+    echo "移動するには:"
+    echo "  cd $worktree_path"
+}
+
+# 新しいブランチのworktreeを作成
+new_worktree() {
+    local branch="$1"
+
+    if [ -z "$branch" ]; then
+        echo "エラー: ブランチ名を指定してください" >&2
+        echo "使い方: wt new <branch-name>" >&2
+        exit 1
+    fi
+
+    check_git_repo
+
+    local worktree_path="$(get_worktree_path "$branch")"
+
+    if [ -d "$worktree_path" ]; then
+        echo "エラー: worktreeはすでに存在します: $worktree_path" >&2
+        exit 1
+    fi
+
+    echo "新しいブランチとworktreeを作成: $branch -> $worktree_path"
+    mkdir -p "$(dirname "$worktree_path")"
+    git worktree add -b "$branch" "$worktree_path"
+
+    echo ""
+    echo "✓ ブランチとworktreeを作成しました"
+    echo "  ブランチ: $branch"
+    echo "  ディレクトリ: $worktree_path"
+    echo ""
+    echo "移動するには:"
+    echo "  cd $worktree_path"
+}
+
+# worktree一覧を表示
+list_worktrees() {
+    check_git_repo
+
+    echo "worktree 一覧:"
+    echo ""
+    git worktree list
+}
+
+# worktreeを削除
+remove_worktree() {
+    local branch="$1"
+
+    if [ -z "$branch" ]; then
+        echo "エラー: ブランチ名を指定してください" >&2
+        echo "使い方: wt remove <branch-name>" >&2
+        exit 1
+    fi
+
+    check_git_repo
+
+    local worktree_path="$(get_worktree_path "$branch")"
+
+    if [ ! -d "$worktree_path" ]; then
+        echo "エラー: worktreeが見つかりません: $worktree_path" >&2
+        exit 1
+    fi
+
+    echo "worktreeを削除: $worktree_path"
+    git worktree remove "$worktree_path"
+
+    echo ""
+    echo "✓ worktreeを削除しました"
+}
+
+# 不要なworktree情報をクリーンアップ
+prune_worktrees() {
+    check_git_repo
+
+    echo "不要なworktree情報をクリーンアップ..."
+    git worktree prune
+
+    echo ""
+    echo "✓ クリーンアップ完了"
+}
+
+# メイン処理
+case "${1:-help}" in
+    add)
+        add_worktree "$2"
+        ;;
+    new)
+        new_worktree "$2"
+        ;;
+    list|ls)
+        list_worktrees
+        ;;
+    remove|rm)
+        remove_worktree "$2"
+        ;;
+    prune)
+        prune_worktrees
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "エラー: 不明なコマンド: $1" >&2
+        echo "" >&2
+        show_help >&2
+        exit 1
+        ;;
+esac
