@@ -48,28 +48,32 @@ create_symlink() {
     ln -sf "$source" "$target"
 }
 
-echo "[1/5] 旧 tmux 設定のクリーンアップ"
+echo "[1/6] 旧 tmux 設定のクリーンアップ"
 if [ -e "$HOME/.tmux.conf" ] || [ -L "$HOME/.tmux.conf" ]; then
     echo "  旧 ~/.tmux.conf を削除（XDG パスより優先されるため）"
     rm -f "$HOME/.tmux.conf"
 fi
 echo ""
 
-echo "[2/5] tmux 設定のセットアップ"
+echo "[2/6] tmux 設定のセットアップ"
 create_symlink "$DOTFILES_DIR/tmux" "$HOME/.config/tmux"
 echo ""
 
-echo "[3/5] Neovim 設定のセットアップ"
+echo "[3/6] Neovim 設定のセットアップ"
 create_symlink "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 echo ""
 
-echo "[4/5] bin/work スクリプトのセットアップ"
+echo "[4/6] Ghostty 設定のセットアップ"
+create_symlink "$DOTFILES_DIR/ghostty" "$HOME/.config/ghostty"
+echo ""
+
+echo "[5/6] bin/work スクリプトのセットアップ"
 create_symlink "$DOTFILES_DIR/bin/work" "$HOME/bin/work"
 chmod +x "$DOTFILES_DIR/bin/work"
 echo "  実行権限を付与: bin/work"
 echo ""
 
-echo "[5/5] bin/wt スクリプトのセットアップ"
+echo "[6/6] bin/wt スクリプトのセットアップ"
 create_symlink "$DOTFILES_DIR/bin/wt" "$HOME/bin/wt"
 chmod +x "$DOTFILES_DIR/bin/wt"
 echo "  実行権限を付与: bin/wt"
