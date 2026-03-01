@@ -4,7 +4,7 @@ theme = Catppuccin Mocha
 # Font
 font-family = JetBrainsMonoNL Nerd Font Mono
 font-feature = -dlig
-font-size = 17
+font-size = 12
 
 font-style-bold = false
 font-style-italic = false
@@ -19,12 +19,11 @@ adjust-cell-width = -1
 adjust-cell-height = 2
 
 # macOS
-macos-titlebar-style = hidden
+macos-titlebar-style = tabs
 macos-window-shadow = false
-macos-non-native-fullscreen = true
-
 # Window
-fullscreen = true
+window-width = 9999
+window-height = 9999
 window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
