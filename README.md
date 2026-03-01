@@ -14,7 +14,8 @@ cd ~/dotfiles
 
 セットアップスクリプトは以下を自動的に行います：
 - 既存ファイルのバックアップ（タイムスタンプ付き）
-- `.tmux.conf` → `~/.tmux.conf` のシンボリックリンク作成
+- 旧 `~/.tmux.conf` のクリーンアップ（XDG パスとの競合回避）
+- `tmux/` → `~/.config/tmux` のシンボリックリンク作成
 - `nvim/` → `~/.config/nvim` のシンボリックリンク作成
 - `bin/work` → `~/bin/work` のシンボリックリンク作成
 - `bin/wt` → `~/bin/wt` のシンボリックリンク作成
@@ -26,7 +27,6 @@ cd ~/dotfiles
 
 ```
 .
-├── .tmux.conf          # tmux 設定
 ├── bin/
 │   ├── work            # 開発用 tmux ワークスペース起動スクリプト
 │   └── wt              # git worktree 管理スクリプト
@@ -43,6 +43,13 @@ cd ~/dotfiles
 │       │   └── options.lua
 │       └── plugins/
 │           └── example.lua
+├── tmux/               # tmux 設定 (~/.config/tmux)
+│   ├── tmux.conf       # エントリポイント
+│   └── conf/
+│       ├── options.conf    # 一般オプション
+│       ├── appearance.conf # 外観設定
+│       ├── keybinds.conf   # キーバインド
+│       └── plugins.conf    # TPM + プラグイン
 └── README.md
 ```
 
@@ -77,7 +84,26 @@ cd ~/dotfiles
 
 ## tmux
 
-- マウス操作を有効化 (`set -g mouse on`)
+[TPM](https://github.com/tmux-plugins/tpm) ベースのプラグイン管理。設定は `tmux/conf/` 配下にモジュール分割。
+
+### モジュール構成
+
+| ファイル | 内容 |
+|---|---|
+| `tmux.conf` | エントリポイント（各 conf を source-file） |
+| `conf/options.conf` | 一般オプション（mouse, vi-mode, escape-time 等） |
+| `conf/appearance.conf` | ペインスタイル、ボーダー色 |
+| `conf/keybinds.conf` | カスタムキーバインド |
+| `conf/plugins.conf` | TPM ブートストラップ + プラグイン宣言 |
+
+### プラグイン一覧
+
+| プラグイン | 説明 |
+|---|---|
+| tmux-sensible | 汎用的なデフォルト設定 |
+| tmux-yank | システムクリップボードへのコピー |
+
+TPM は初回起動時に自動インストールされる。プラグインのインストールは `prefix + I` で実行。
 
 ## bin/work
 

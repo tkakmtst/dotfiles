@@ -48,21 +48,28 @@ create_symlink() {
     ln -sf "$source" "$target"
 }
 
-echo "[1/3] tmux 設定のセットアップ"
-create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
+echo "[1/5] 旧 tmux 設定のクリーンアップ"
+if [ -e "$HOME/.tmux.conf" ] || [ -L "$HOME/.tmux.conf" ]; then
+    echo "  旧 ~/.tmux.conf を削除（XDG パスより優先されるため）"
+    rm -f "$HOME/.tmux.conf"
+fi
 echo ""
 
-echo "[2/3] Neovim 設定のセットアップ"
+echo "[2/5] tmux 設定のセットアップ"
+create_symlink "$DOTFILES_DIR/tmux" "$HOME/.config/tmux"
+echo ""
+
+echo "[3/5] Neovim 設定のセットアップ"
 create_symlink "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 echo ""
 
-echo "[3/4] bin/work スクリプトのセットアップ"
+echo "[4/5] bin/work スクリプトのセットアップ"
 create_symlink "$DOTFILES_DIR/bin/work" "$HOME/bin/work"
 chmod +x "$DOTFILES_DIR/bin/work"
 echo "  実行権限を付与: bin/work"
 echo ""
 
-echo "[4/4] bin/wt スクリプトのセットアップ"
+echo "[5/5] bin/wt スクリプトのセットアップ"
 create_symlink "$DOTFILES_DIR/bin/wt" "$HOME/bin/wt"
 chmod +x "$DOTFILES_DIR/bin/wt"
 echo "  実行権限を付与: bin/wt"
@@ -95,7 +102,8 @@ if [ -d "$BACKUP_DIR" ]; then
 fi
 
 echo "次のステップ："
-echo "  1. tmux を再起動または 'tmux source ~/.tmux.conf' を実行"
-echo "  2. Neovim を起動してプラグインをインストール"
-echo "  3. 'work' コマンドで開発環境を起動"
+echo "  1. tmux を再起動または 'tmux source ~/.config/tmux/tmux.conf' を実行"
+echo "  2. tmux 内で prefix + I を押して TPM プラグインをインストール"
+echo "  3. Neovim を起動してプラグインをインストール"
+echo "  4. 'work' コマンドで開発環境を起動"
 echo ""
