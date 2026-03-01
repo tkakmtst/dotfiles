@@ -38,6 +38,8 @@ cursor-color = cell-foreground
 cursor-text = cell-background
 cursor-opacity = 0.8
 
+background-opacity = 0.8
+
 # Other
 mouse-hide-while-typing = true
 resize-overlay = never
