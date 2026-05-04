@@ -16,9 +16,10 @@ font-thicken-strength = 1
 alpha-blending = linear
 
 adjust-cell-width = -1
-adjust-cell-height = 2
+adjust-cell-height = 0
 
 # macOS
+macos-option-as-alt = true
 macos-titlebar-style = tabs
 macos-window-shadow = false
 # Window
@@ -43,3 +44,9 @@ background-opacity = 0.9
 # Other
 mouse-hide-while-typing = true
 resize-overlay = never
+
+# Keybinds - pass ctrl/option+arrow to tmux for pane resize
+keybind = ctrl+left=unbind
+keybind = ctrl+right=unbind
+keybind = ctrl+up=unbind
+keybind = ctrl+down=unbind
