@@ -4,6 +4,8 @@ theme = Catppuccin Mocha
 # Font
 font-family = JetBrainsMonoNL Nerd Font Mono
 font-feature = -dlig
+font-feature = -calt
+font-feature = -liga
 font-size = 14
 
 font-style-bold = false
